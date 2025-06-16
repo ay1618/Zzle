@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zzle Game Level Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .editor-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            align-items: flex-start;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(16, 30px);
+            grid-template-rows: repeat(16, 30px);
+            gap: 1px;
+            background-color: #ccc;
+        }
+
+        .grid-cell {
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .grid-cell.selected {
+            border: 2px solid black;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: #e0e0e0;
+            padding: 15px;
+            border-radius: 5px;
+            min-width: 300px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-group h3 {
+            margin: 0;
+            margin-bottom: 5px;
+        }
+
+        .tools {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tool {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #999;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .tool.selected {
+            border: 3px solid #333;
+        }
+
+        .color-tool {
+            border-radius: 50%;
+        }
+
+        .orange {
+            background-color: #ff9800;
+        }
+
+        .purple {
+            background-color: #9c27b0;
+        }
+
+        .turquoise {
+            background-color: #00bcd4;
+        }
+
+        .eraser {
+            background-color: white;
+        }
+
+        .arrow {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .arrow-svg {
+            width: 24px;
+            height: 24px;
+            fill: #ff4081;
+            filter: drop-shadow(0px 1px 2px rgba(0,0,0,0.3));
+        }
+
+        .star {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #FFD700;
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+
+        .stacks-config {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stack-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #3e8e41;
+        }
+
+        button.danger {
+            background-color: #f44336;
+        }
+
+        button.danger:hover {
+            background-color: #d32f2f;
+        }
+
+        .rotation-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .rotation-btn {
+            width: 40px;
+            height: 40px;
+            background-color: #ddd;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .level-name-input {
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .generated-json {
+            margin-top: 20px;
+            width: 100%;
+            min-height: 200px;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: monospace;
+            white-space: pre;
+            overflow: auto;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .import-export {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        /* Debug panel styles */
+        .debug-panel {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .debug-info {
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Zzle Game Level Editor</h1>
+
+    <div class="editor-container">
+        <div class="grid-container" id="grid"></div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>Level Information</h3>
+                <input type="text" id="levelName" class="level-name-input" placeholder="Level Name" value="New Level">
+            </div>
+
+            <div class="control-group">
+                <h3>Paint Tools</h3>
+                <div class="tools">
+                    <div class="tool color-tool orange" id="orangeTool" title="Orange Color"></div>
+                    <div class="tool color-tool purple" id="purpleTool" title="Purple Color"></div>
+                    <div class="tool color-tool turquoise" id="turquoiseTool" title="Turquoise Color"></div>
+                    <div class="tool eraser" id="eraserTool" title="Eraser"></div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Game Elements</h3>
+                <div class="tools">
+                    <div class="tool" id="arrowTool" title="Arrow">
+                        <svg class="arrow-svg" viewBox="0 0 24 24">
+                            <path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z" />
+                        </svg>
+                    </div>
+                    <div class="tool" id="starTool" title="Star">
+                        <span style="font-size: 24px; color: #FFD700;">⭐</span>
+                    </div>
+                </div>
+
+                <div class="rotation-controls" id="rotationControls" style="display: none;">
+                    <div class="rotation-btn" id="rotateLeft">↺</div>
+                    <div class="rotation-btn" id="rotateRight">↻</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Stacks Configuration</h3>
+                <div class="stacks-config" id="stacksConfig">
+                    <div class="stack-row">
+                        <label>Stack 0:</label>
+                        <input type="number" min="1" max="10" value="4" id="stack0Size">
+                    </div>
+                </div>
+                <button id="addStackBtn">Add Stack</button>
+            </div>
+
+            <div class="action-buttons">
+                <button id="generateBtn">Generate Level JSON</button>
+                <button id="clearBtn" class="danger">Clear Grid</button>
+            </div>
+
+            <div class="import-export">
+                <button id="copyJsonBtn">Copy JSON to Clipboard</button>
+                <textarea id="generatedJson" class="generated-json" readonly></textarea>
+            </div>
+
+            <!-- Debug panel -->
+            <div class="debug-panel">
+                <h3>Debug Information</h3>
+                <button id="debugBtn">Show Debug Info</button>
+                <div id="debugInfo" class="debug-info"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Level editor state
+        const editorState = {
+            grid: Array(16).fill().map(() => Array(16).fill(null)),
+            selectedTool: null,
+            arrowPosition: null,
+            arrowDirection: 0, // 0: up, 1: right, 2: down, 3: left
+            stars: [],
+            stackSizes: [4],
+            levelName: "New Level"
+        };
+
+        // Initialize editor
+        function initEditor() {
+            createGrid();
+            setupListeners();
+            setSelectedTool('orangeTool');
+            updateStacksUI();
+            document.getElementById('levelName').value = editorState.levelName;
+        }
+
+        // Create the 16x16 grid
+        function createGrid() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+
+            for (let y = 0; y < 16; y++) {
+                for (let x = 0; x < 16; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    cell.addEventListener('click', () => handleGridCellClick(x, y));
+                    cell.addEventListener('mouseover', (e) => {
+                        if (e.buttons === 1) { // Left mouse button is pressed during mouseover
+                            handleGridCellClick(x, y);
+                        }
+                    });
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        // Setup event listeners
+        function setupListeners() {
+            // Tool selection
+            document.getElementById('orangeTool').addEventListener('click', () => setSelectedTool('orangeTool'));
+            document.getElementById('purpleTool').addEventListener('click', () => setSelectedTool('purpleTool'));
+            document.getElementById('turquoiseTool').addEventListener('click', () => setSelectedTool('turquoiseTool'));
+            document.getElementById('eraserTool').addEventListener('click', () => setSelectedTool('eraserTool'));
+            document.getElementById('arrowTool').addEventListener('click', () => setSelectedTool('arrowTool'));
+            document.getElementById('starTool').addEventListener('click', () => setSelectedTool('starTool'));
+
+            // Rotation controls
+            document.getElementById('rotateLeft').addEventListener('click', () => rotateArrow(-1));
+            document.getElementById('rotateRight').addEventListener('click', () => rotateArrow(1));
+
+            // Stack management
+            document.getElementById('addStackBtn').addEventListener('click', addStack);
+
+            // Action buttons
+            document.getElementById('generateBtn').addEventListener('click', generateLevelJson);
+            document.getElementById('clearBtn').addEventListener('click', clearGrid);
+            document.getElementById('copyJsonBtn').addEventListener('click', copyJsonToClipboard);
+
+            // Level name
+            document.getElementById('levelName').addEventListener('input', (e) => {
+                editorState.levelName = e.target.value;
+            });
+
+            // Debug button
+            document.getElementById('debugBtn').addEventListener('click', showDebugInfo);
+
+            // Prevent text selection during drag painting
+            document.getElementById('grid').addEventListener('selectstart', (e) => e.preventDefault());
+        }
+
+        // Show debug information
+        function showDebugInfo() {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.textContent = JSON.stringify({
+                selectedTool: editorState.selectedTool,
+                arrowPosition: editorState.arrowPosition,
+                arrowDirection: editorState.arrowDirection,
+                stars: editorState.stars,
+                stackSizes: editorState.stackSizes
+            }, null, 2);
+        }
+
+        // Set the selected tool
+        function setSelectedTool(toolId) {
+            // Deselect all tools
+            document.querySelectorAll('.tool').forEach(tool => {
+                tool.classList.remove('selected');
+            });
+
+            // Select the new tool
+            document.getElementById(toolId).classList.add('selected');
+            editorState.selectedTool = toolId;
+
+            console.log("Selected tool:", toolId);
+
+            // Show/hide rotation controls if arrow tool is selected
+            const rotationControls = document.getElementById('rotationControls');
+            rotationControls.style.display = (toolId === 'arrowTool') ? 'flex' : 'none';
+        }
+
+        // Handle grid cell click
+        function handleGridCellClick(x, y) {
+            console.log(`Clicked cell (${x}, ${y}) with tool: ${editorState.selectedTool}`);
+
+            // Handle different tools
+            switch (editorState.selectedTool) {
+                case 'orangeTool':
+                    editorState.grid[y][x] = { type: 'color', color: 'orange' };
+                    break;
+                case 'purpleTool':
+                    editorState.grid[y][x] = { type: 'color', color: 'purple' };
+                    break;
+                case 'turquoiseTool':
+                    editorState.grid[y][x] = { type: 'color', color: 'turquoise' };
+                    break;
+                case 'eraserTool':
+                    editorState.grid[y][x] = null;
+                    // Also check if arrow or star is at this position
+                    if (editorState.arrowPosition && editorState.arrowPosition.x === x && editorState.arrowPosition.y === y) {
+                        editorState.arrowPosition = null;
+                    }
+
+                    // Remove any stars at this position
+                    editorState.stars = editorState.stars.filter(star => !(star.x === x && star.y === y));
+                    break;
+                case 'arrowTool':
+                    // Set arrow position
+                    editorState.arrowPosition = { x, y };
+                    console.log("Arrow placed at:", editorState.arrowPosition);
+                    break;
+                case 'starTool':
+                    // Check if star already exists at this position
+                    const existingStar = editorState.stars.findIndex(star => star.x === x && star.y === y);
+                    if (existingStar !== -1) {
+                        // Remove star if it already exists
+                        editorState.stars.splice(existingStar, 1);
+                        console.log("Star removed from:", x, y);
+                    } else {
+                        // Add new star
+                        editorState.stars.push({ x, y });
+                        console.log("Star added at:", x, y);
+                    }
+                    break;
+            }
+
+            // Update the grid display
+            updateGridDisplay();
+
+            // Debug - show state after click
+            showDebugInfo();
+        }
+
+        // Update the grid display
+        function updateGridDisplay() {
+            const gridCells = document.querySelectorAll('.grid-cell');
+
+            gridCells.forEach(cell => {
+                const x = parseInt(cell.dataset.x);
+                const y = parseInt(cell.dataset.y);
+
+                // Clear cell contents first
+                cell.innerHTML = '';
+                cell.style.backgroundColor = 'white';
+
+                // Apply color if needed
+                if (editorState.grid[y][x] && editorState.grid[y][x].type === 'color') {
+                    cell.style.backgroundColor = editorState.grid[y][x].color;
+                }
+
+                // Check if star is on this cell
+                const hasStar = editorState.stars.some(star => star.x === x && star.y === y);
+
+                if (hasStar) {
+                    const starElement = document.createElement('div');
+                    starElement.className = 'star';
+                    starElement.textContent = '⭐';
+                    cell.appendChild(starElement);
+                }
+
+                // Check if arrow is on this cell
+                if (editorState.arrowPosition && editorState.arrowPosition.x === x && editorState.arrowPosition.y === y) {
+                    const arrowElement = document.createElement('div');
+                    arrowElement.className = 'arrow';
+
+                    // Using SVG for the arrow
+                    arrowElement.innerHTML = `
+                        <svg class="arrow-svg" viewBox="0 0 24 24">
+                            <path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z" />
+                        </svg>
+                    `;
+
+                    // Rotate arrow based on direction
+                    const rotations = [0, 90, 180, 270]; // Up, Right, Down, Left
+                    arrowElement.style.transform = `rotate(${rotations[editorState.arrowDirection]}deg)`;
+
+                    cell.appendChild(arrowElement);
+                }
+            });
+        }
+
+        // Rotate the arrow
+        function rotateArrow(direction) {
+            if (!editorState.arrowPosition) return;
+
+            // direction: -1 for left, 1 for right
+            editorState.arrowDirection = (editorState.arrowDirection + 4 + direction) % 4;
+            console.log("Arrow rotated to direction:", editorState.arrowDirection);
+            updateGridDisplay();
+        }
+
+        // Add a new stack
+        function addStack() {
+            if (editorState.stackSizes.length < 3) { // Max 3 stacks
+                editorState.stackSizes.push(4); // Default size 4
+                updateStacksUI();
+            } else {
+                alert("Maximum of 3 stacks allowed.");
+            }
+        }
+
+        // Update stacks UI
+        function updateStacksUI() {
+            const stacksConfig = document.getElementById('stacksConfig');
+            stacksConfig.innerHTML = '';
+
+            editorState.stackSizes.forEach((size, index) => {
+                const stackRow = document.createElement('div');
+                stackRow.className = 'stack-row';
+
+                const label = document.createElement('label');
+                label.textContent = `Stack ${index}:`;
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = 1;
+                input.max = 10;
+                input.value = size;
+                input.id = `stack${index}Size`;
+                input.addEventListener('input', (e) => {
+                    editorState.stackSizes[index] = parseInt(e.target.value);
+                });
+
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = 'X';
+                removeBtn.className = 'danger';
+                removeBtn.style.padding = '5px 10px';
+
+                // Can't remove Stack 0
+                if (index > 0) {
+                    removeBtn.addEventListener('click', () => {
+                        editorState.stackSizes.splice(index, 1);
+                        updateStacksUI();
+                    });
+                } else {
+                    removeBtn.disabled = true;
+                    removeBtn.style.opacity = 0.5;
+                }
+
+                stackRow.appendChild(label);
+                stackRow.appendChild(input);
+                stackRow.appendChild(removeBtn);
+
+                stacksConfig.appendChild(stackRow);
+            });
+        }
+
+        // Generate level JSON
+        function generateLevelJson() {
+            console.log("Generating level JSON with state:", {
+                arrow: editorState.arrowPosition,
+                stars: editorState.stars,
+                stacks: editorState.stackSizes
+            });
+
+            // Check if arrow is placed
+            if (!editorState.arrowPosition) {
+                alert("Please place an arrow on the grid.");
+                return;
+            }
+
+            // Check if at least one star is placed
+            if (editorState.stars.length === 0) {
+                alert("Please place at least one star on the grid.");
+                return;
+            }
+
+            // Generate colored cells array
+            const coloredCells = [];
+            for (let y = 0; y < 16; y++) {
+                for (let x = 0; x < 16; x++) {
+                    if (editorState.grid[y][x] && editorState.grid[y][x].type === 'color') {
+                        coloredCells.push({
+                            x: x,
+                            y: y,
+                            color: editorState.grid[y][x].color
+                        });
+                    }
+                }
+            }
+
+            // Generate stacks configuration
+            const stacks = editorState.stackSizes.map(size => ({ size }));
+
+            // Create level object
+            const level = {
+                name: editorState.levelName,
+                stacks: stacks,
+                arrow: {
+                    position: { ...editorState.arrowPosition },
+                    direction: editorState.arrowDirection
+                },
+                stars: [...editorState.stars],
+                coloredCells: coloredCells
+            };
+
+            // Generate level key (sanitized from the name)
+            const levelKey = editorState.levelName
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '')
+                .substring(0, 20);
+
+            // Format the JSON
+            const levelJson = `"${levelKey}": ${JSON.stringify(level, null, 4)}`;
+
+            // Display the JSON
+            document.getElementById('generatedJson').value = levelJson;
+        }
+
+        // Copy JSON to clipboard
+        function copyJsonToClipboard() {
+            const jsonTextarea = document.getElementById('generatedJson');
+            jsonTextarea.select();
+            document.execCommand('copy');
+
+            // Visual feedback
+            const copyButton = document.getElementById('copyJsonBtn');
+            const originalText = copyButton.textContent;
+            copyButton.textContent = 'Copied!';
+
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+            }, 2000);
+        }
+
+        // Clear the grid
+        function clearGrid() {
+            if (confirm("Are you sure you want to clear the grid? All your work will be lost.")) {
+                editorState.grid = Array(16).fill().map(() => Array(16).fill(null));
+                editorState.arrowPosition = null;
+                editorState.stars = [];
+                updateGridDisplay();
+                document.getElementById('generatedJson').value = '';
+            }
+        }
+
+        // Initialize the editor when the page loads
+        window.onload = initEditor;
+    </script>
+</body>
+</html>
