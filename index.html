@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,32 +13,33 @@
             align-items: center;
             background-color: #f0f0f0;
         }
-        
+
         .game-container {
             display: flex;
             gap: 20px;
             margin-top: 20px;
         }
-        
+
         .execution-queue {
             display: flex;
             flex-direction: column;
             gap: 5px;
             width: 40px;
-            height: 483px; /* Same height as grid: 16*30 + 15*1 = 495px */
+            height: 483px;
+            /* Same height as grid: 16*30 + 15*1 = 495px */
             overflow-y: auto;
             background-color: #222;
             padding: 8px;
             border-radius: 5px;
         }
-        
+
         .queue-header {
             color: white;
             font-weight: bold;
             text-align: center;
             margin-bottom: 10px;
         }
-        
+
         .queue-item {
             width: 40px;
             height: 40px;
@@ -50,11 +52,11 @@
             color: white;
             margin-bottom: 5px;
         }
-        
+
         .queue-item.current {
             border: 2px solid yellow;
         }
-        
+
         .grid-container {
             display: grid;
             grid-template-columns: repeat(16, 30px);
@@ -62,7 +64,7 @@
             gap: 1px;
             background-color: #ccc;
         }
-        
+
         .grid-cell {
             width: 30px;
             height: 30px;
@@ -73,7 +75,7 @@
             font-size: 20px;
             position: relative;
         }
-        
+
         .arrow {
             width: 30px;
             height: 30px;
@@ -86,32 +88,32 @@
             transform-origin: center;
             z-index: 10;
         }
-        
+
         .arrow-svg {
             width: 24px;
             height: 24px;
             fill: #ff4081;
-            filter: drop-shadow(0px 1px 2px rgba(0,0,0,0.3));
+            filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
         }
-        
+
         .star {
             font-size: 24px;
             color: #FFD700;
-            text-shadow: 0px 1px 2px rgba(0,0,0,0.3);
+            text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
         }
-        
+
         .controls {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .stacks-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .stack {
             display: flex;
             flex-direction: column;
@@ -119,17 +121,17 @@
             padding: 10px;
             border-radius: 5px;
         }
-        
+
         .stack-header {
             margin-bottom: 5px;
             font-weight: bold;
         }
-        
+
         .stack-cells {
             display: flex;
             gap: 5px;
         }
-        
+
         .stack-cell {
             width: 40px;
             height: 40px;
@@ -143,23 +145,23 @@
             cursor: pointer;
             position: relative;
         }
-        
+
         .stack-cell.selected {
             border: 2px solid yellow;
         }
-        
+
         .command-buttons {
             display: flex;
             flex-direction: column;
             gap: 10px;
             margin-top: 20px;
         }
-        
+
         .button-group {
             display: flex;
             gap: 5px;
         }
-        
+
         .cmd-btn {
             width: 40px;
             height: 40px;
@@ -173,11 +175,11 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .cmd-btn.selected {
             border: 2px solid yellow;
         }
-        
+
         .color-btn {
             width: 30px;
             height: 30px;
@@ -185,31 +187,31 @@
             border: none;
             border-radius: 50%;
         }
-        
+
         .color-btn.selected {
             border: 2px solid black;
         }
-        
+
         .orange {
             background-color: #ff9800;
         }
-        
+
         .purple {
             background-color: #9c27b0;
         }
-        
+
         .turquoise {
             background-color: #00bcd4;
         }
-        
+
         /* New Clear Color button */
         .clear-color {
             background-color: white;
             border: 1px solid #ccc;
             position: relative;
         }
-        
-        .clear-color::before, 
+
+        .clear-color::before,
         .clear-color::after {
             content: '';
             position: absolute;
@@ -220,11 +222,11 @@
             left: 50%;
             transform: translate(-50%, -50%) rotate(45deg);
         }
-        
+
         .clear-color::after {
             transform: translate(-50%, -50%) rotate(-45deg);
         }
-        
+
         .control-btn {
             padding: 10px;
             cursor: pointer;
@@ -234,32 +236,34 @@
             color: white;
             font-weight: bold;
         }
-        
+
         .speed-control {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        .orange-dot, .purple-dot, .turquoise-dot {
+
+        .orange-dot,
+        .purple-dot,
+        .turquoise-dot {
             display: inline-block;
             width: 10px;
             height: 10px;
             border-radius: 50%;
         }
-        
+
         .orange-dot {
             background-color: #ff9800;
         }
-        
+
         .purple-dot {
             background-color: #9c27b0;
         }
-        
+
         .turquoise-dot {
             background-color: #00bcd4;
         }
-        
+
         .level-selector {
             margin-bottom: 20px;
         }
@@ -284,59 +288,60 @@
         }
     </style>
 </head>
+
 <body>
     <h1>Zzle Game</h1>
-    
+
     <div class="level-selector">
         <label for="levelSelect">Select Level: </label>
         <select id="levelSelect"></select>
         <button id="loadLevelBtn">Load Level</button>
     </div>
-    
+
     <div class="game-container">
         <div class="execution-queue" id="executionQueue">
             <div class="queue-header">Queue</div>
             <!-- Queue items will be dynamically added here -->
         </div>
-        
+
         <div class="grid-container" id="grid"></div>
-        
+
         <div class="controls">
             <div class="control-buttons">
                 <button class="control-btn" id="runBtn">Run</button>
                 <button class="control-btn" id="stepBtn">Step</button>
                 <button class="control-btn" id="resetBtn">Reset</button>
             </div>
-            
+
             <div class="speed-control">
                 <label for="speedRange">Speed:</label>
                 <input type="range" id="speedRange" min="1" max="5" value="3">
                 <span id="speedValue">800ms</span>
             </div>
-            
+
             <div class="stacks-container" id="stacks">
                 <!-- Stacks will be generated here -->
             </div>
-            
+
             <div class="command-buttons">
                 <div class="button-group">
                     <button class="cmd-btn" id="cmdForward">↑</button>
                     <button class="cmd-btn" id="cmdLeft">←</button>
                     <button class="cmd-btn" id="cmdRight">→</button>
                 </div>
-                
+
                 <div class="button-group">
                     <button class="cmd-btn" id="cmdStack0">0</button>
                     <button class="cmd-btn" id="cmdStack1">1</button>
                     <button class="cmd-btn" id="cmdStack2">2</button>
                 </div>
-                
+
                 <div class="button-group">
                     <button class="cmd-btn" id="cmdPaintOrange">+<span class="orange-dot">●</span></button>
                     <button class="cmd-btn" id="cmdPaintPurple">+<span class="purple-dot">●</span></button>
                     <button class="cmd-btn" id="cmdPaintTurquoise">+<span class="turquoise-dot">●</span></button>
                 </div>
-                
+
                 <div class="button-group">
                     <button class="color-btn orange" id="colorOrange"></button>
                     <button class="color-btn purple" id="colorPurple"></button>
@@ -366,88 +371,77 @@
     <script>
         // Game levels configuration
         const GAME_LEVELS = {
-            "level1": {
-                name: "Simple Path",
-                stacks: [
-                    { size: 4 },
-                    { size: 3 }
+            "level 1": {
+                "name": "New Level",
+                "stacks": [
+                    {
+                        "size": 4
+                    }
                 ],
-                arrow: {
-                    position: { x: 5, y: 5 },
-                    direction: 0  // 0: up, 1: right, 2: down, 3: left
+                "arrow": {
+                    "position": {
+                        "x": 5,
+                        "y": 11
+                    },
+                    "direction": 0
                 },
-                stars: [
-                    { x: 8, y: 7 }
+                "stars": [
+                    {
+                        "x": 9,
+                        "y": 6
+                    }
                 ],
-                coloredCells: [
-                    { x: 5, y: 5, color: "orange" },
-                    { x: 6, y: 5, color: "orange" },
-                    { x: 7, y: 5, color: "orange" },
-                    { x: 8, y: 5, color: "purple" },
-                    { x: 8, y: 6, color: "purple" },
-                    { x: 8, y: 7, color: "turquoise" },
-                    { x: 7, y: 7, color: "turquoise" },
-                    { x: 6, y: 7, color: "turquoise" }
-                ]
-            },
-            "level2": {
-                name: "Spiral Path",
-                stacks: [
-                    { size: 5 },
-                    { size: 4 },
-                    { size: 3 }
-                ],
-                arrow: {
-                    position: { x: 8, y: 8 },
-                    direction: 0
-                },
-                stars: [
-                    { x: 5, y: 5 }
-                ],
-                coloredCells: [
-                    { x: 8, y: 8, color: "orange" },
-                    { x: 8, y: 7, color: "orange" },
-                    { x: 8, y: 6, color: "orange" },
-                    { x: 7, y: 6, color: "purple" },
-                    { x: 6, y: 6, color: "purple" },
-                    { x: 6, y: 7, color: "turquoise" },
-                    { x: 6, y: 8, color: "turquoise" },
-                    { x: 7, y: 8, color: "orange" },
-                    { x: 7, y: 7, color: "orange" },
-                    { x: 5, y: 5, color: "turquoise" }
-                ]
-            },
-            "level3": {
-                name: "Loop Challenge",
-                stacks: [
-                    { size: 4 },
-                    { size: 4 },
-                    { size: 4 }
-                ],
-                arrow: {
-                    position: { x: 4, y: 4 },
-                    direction: 1
-                },
-                stars: [
-                    { x: 10, y: 4 }
-                ],
-                coloredCells: [
-                    { x: 4, y: 4, color: "orange" },
-                    { x: 5, y: 4, color: "orange" },
-                    { x: 6, y: 4, color: "orange" },
-                    { x: 7, y: 4, color: "purple" },
-                    { x: 8, y: 4, color: "purple" },
-                    { x: 9, y: 4, color: "purple" },
-                    { x: 10, y: 4, color: "turquoise" },
-                    { x: 10, y: 5, color: "turquoise" },
-                    { x: 10, y: 6, color: "turquoise" },
-                    { x: 9, y: 6, color: "orange" },
-                    { x: 8, y: 6, color: "orange" },
-                    { x: 7, y: 6, color: "orange" },
-                    { x: 6, y: 6, color: "purple" },
-                    { x: 5, y: 6, color: "purple" },
-                    { x: 4, y: 6, color: "purple" },
-                    { x: 4, y: 5, color: "turquoise" }
+                "coloredCells": [
+                    {
+                        "x": 9,
+                        "y": 6,
+                        "color": "orange"
+                    },
+                    {
+                        "x": 8,
+                        "y": 7,
+                        "color": "orange"
+                    },
+                    {
+                        "x": 9,
+                        "y": 7,
+                        "color": "orange"
+                    },
+                    {
+                        "x": 7,
+                        "y": 8,
+                        "color": "orange"
+                    },
+                    {
+                        "x": 8,
+                        "y": 8,
+                        "color": "orange"
+                    },
+                    {
+                        "x": 6,
+                        "y": 9,
+                        "color": "orange"
+                    },
+                    {
+                        "x": 7,
+                        "y": 9,
+                        "color": "orange"
+                    },
+                    {
+                        "x": 5,
+                        "y": 10,
+                        "color": "orange"
+                    },
+                    {
+                        "x": 6,
+                        "y": 10,
+                        "color": "orange"
+                    },
+                    {
+                        "x": 5,
+                        "y": 11,
+                        "color": "orange"
+                    }
                 ]
             }
         };
@@ -489,13 +483,13 @@
                         color: null
                     });
                     updateGameDisplay();
-                    
+
                     // Print debug info
-                    document.getElementById('debugOutput').textContent = 
+                    document.getElementById('debugOutput').textContent =
                         `Added forward command to Stack 0. Now has ${gameState.stacks[0].commands.length} commands.`;
                 }
             });
-            
+
             // Debug button to print stack contents
             document.getElementById('debugPrintStacks').addEventListener('click', () => {
                 let output = '';
@@ -513,14 +507,14 @@
         function populateLevelSelector() {
             const levelSelect = document.getElementById('levelSelect');
             levelSelect.innerHTML = '';
-            
+
             Object.keys(GAME_LEVELS).forEach(levelKey => {
                 const option = document.createElement('option');
                 option.value = levelKey;
                 option.textContent = GAME_LEVELS[levelKey].name;
                 levelSelect.appendChild(option);
             });
-            
+
             levelSelect.value = gameState.currentLevelKey;
         }
 
@@ -530,36 +524,36 @@
                 console.error(`Level ${levelKey} not found!`);
                 return;
             }
-            
+
             gameState.currentLevelKey = levelKey;
             const levelConfig = GAME_LEVELS[levelKey];
-            
+
             // Reset game state
             gameState.grid = Array(16).fill().map(() => Array(16).fill(null));
             gameState.executionQueue = [];
             gameState.isRunning = false;
-            
+
             // Set up stacks
             gameState.stacks = levelConfig.stacks.map(stack => ({
                 size: stack.size,
                 commands: []
             }));
-            
+
             // Set arrow position and direction
             gameState.arrowPosition = { ...levelConfig.arrow.position };
             gameState.arrowDirection = levelConfig.arrow.direction;
-            
+
             // Set stars
             gameState.stars = [...levelConfig.stars];
-            
+
             // Set colored cells
             levelConfig.coloredCells.forEach(cell => {
                 gameState.grid[cell.y][cell.x] = { type: 'color', color: cell.color };
             });
-            
+
             // Recreate stacks UI
             createStacks();
-            
+
             // Update display
             updateGameDisplay();
 
@@ -574,7 +568,7 @@
         function createGrid() {
             const gridElement = document.getElementById('grid');
             gridElement.innerHTML = '';
-            
+
             for (let y = 0; y < 16; y++) {
                 for (let x = 0; x < 16; x++) {
                     const cell = document.createElement('div');
@@ -591,19 +585,19 @@
         function createStacks() {
             const stacksContainer = document.getElementById('stacks');
             stacksContainer.innerHTML = '';
-            
+
             gameState.stacks.forEach((stack, index) => {
                 const stackElement = document.createElement('div');
                 stackElement.className = 'stack';
-                
+
                 const header = document.createElement('div');
                 header.className = 'stack-header';
                 header.textContent = `Stack ${index}`;
                 stackElement.appendChild(header);
-                
+
                 const cells = document.createElement('div');
                 cells.className = 'stack-cells';
-                
+
                 for (let i = 0; i < stack.size; i++) {
                     const cell = document.createElement('div');
                     cell.className = 'stack-cell';
@@ -612,11 +606,11 @@
                     cell.addEventListener('click', () => handleStackCellClick(index, i));
                     cells.appendChild(cell);
                 }
-                
+
                 stackElement.appendChild(cells);
                 stacksContainer.appendChild(stackElement);
             });
-            
+
             // Update stack button visibility based on number of stacks
             for (let i = 0; i < 3; i++) {
                 const stackButton = document.getElementById(`cmdStack${i}`);
@@ -639,14 +633,14 @@
                 const levelKey = document.getElementById('levelSelect').value;
                 loadLevel(levelKey);
             });
-            
+
             document.getElementById('speedRange').addEventListener('input', (e) => {
                 const speedValues = [100, 400, 800, 1600, 2000];
                 const speedIndex = parseInt(e.target.value) - 1;
                 gameState.speed = speedValues[speedIndex];
                 document.getElementById('speedValue').textContent = `${gameState.speed}ms`;
             });
-            
+
             // Command buttons
             document.getElementById('cmdForward').addEventListener('click', () => setSelectedCommand('forward'));
             document.getElementById('cmdLeft').addEventListener('click', () => setSelectedCommand('left'));
@@ -657,12 +651,12 @@
             document.getElementById('cmdPaintOrange').addEventListener('click', () => setSelectedCommand('paintOrange'));
             document.getElementById('cmdPaintPurple').addEventListener('click', () => setSelectedCommand('paintPurple'));
             document.getElementById('cmdPaintTurquoise').addEventListener('click', () => setSelectedCommand('paintTurquoise'));
-            
+
             // Color buttons
             document.getElementById('colorOrange').addEventListener('click', () => setSelectedColor('orange'));
             document.getElementById('colorPurple').addEventListener('click', () => setSelectedColor('purple'));
             document.getElementById('colorTurquoise').addEventListener('click', () => setSelectedColor('turquoise'));
-            
+
             // Clear color button
             document.getElementById('colorClear').addEventListener('click', () => setSelectedColor(null));
         }
@@ -672,51 +666,51 @@
             // Clear any existing arrows
             const existingArrows = document.querySelectorAll('.arrow');
             existingArrows.forEach(arrow => arrow.remove());
-            
+
             // Update grid
             const gridCells = document.querySelectorAll('.grid-cell');
             gridCells.forEach(cell => {
                 const x = parseInt(cell.dataset.x);
                 const y = parseInt(cell.dataset.y);
-                
+
                 // Reset cell
                 cell.style.backgroundColor = 'white';
                 cell.innerHTML = '';
-                
+
                 // Apply color if needed
                 if (gameState.grid[y] && gameState.grid[y][x] && gameState.grid[y][x].type === 'color') {
                     cell.style.backgroundColor = gameState.grid[y][x].color;
                 }
-                
+
                 // Draw star if on this cell
                 if (gameState.stars.some(star => star.x === x && star.y === y)) {
                     cell.innerHTML = `<div class="star">⭐</div>`;
                 }
             });
-            
+
             // Draw arrow
             const arrowX = gameState.arrowPosition.x;
             const arrowY = gameState.arrowPosition.y;
             const arrowCell = document.querySelector(`.grid-cell[data-x="${arrowX}"][data-y="${arrowY}"]`);
-            
+
             if (arrowCell) {
                 const arrow = document.createElement('div');
                 arrow.className = 'arrow';
-                
+
                 // Using SVG for the arrow
                 arrow.innerHTML = `
                     <svg class="arrow-svg" viewBox="0 0 24 24">
                         <use href="#arrow-cursor"></use>
                     </svg>
                 `;
-                
+
                 // Rotate arrow based on direction
                 const rotations = [0, 90, 180, 270]; // Up, Right, Down, Left
                 arrow.style.transform = `rotate(${rotations[gameState.arrowDirection]}deg)`;
-                
+
                 arrowCell.appendChild(arrow);
             }
-            
+
             // Update stacks
             gameState.stacks.forEach((stack, stackIndex) => {
                 for (let i = 0; i < stack.size; i++) {
@@ -724,11 +718,11 @@
                     if (cellElement) {
                         cellElement.innerHTML = '';
                         cellElement.style.backgroundColor = '#333';
-                        
+
                         if (i < stack.commands.length) {
                             const command = stack.commands[i];
                             let symbol = '';
-                            
+
                             switch (command.type) {
                                 case 'forward': symbol = '↑'; break;
                                 case 'left': symbol = '←'; break;
@@ -740,9 +734,9 @@
                                 case 'paintPurple': symbol = '+<span class="purple-dot">●</span>'; break;
                                 case 'paintTurquoise': symbol = '+<span class="turquoise-dot">●</span>'; break;
                             }
-                            
+
                             cellElement.innerHTML = symbol;
-                            
+
                             if (command.color) {
                                 cellElement.style.backgroundColor = command.color;
                             }
@@ -750,48 +744,48 @@
                     }
                 }
             });
-            
+
             // Update execution queue display
             updateExecutionQueueDisplay();
-            
+
             // Update color button selection
             document.querySelectorAll('.color-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
-            
+
             if (gameState.selectedColor === null) {
                 document.getElementById('colorClear').classList.add('selected');
             } else if (gameState.selectedColor) {
                 document.getElementById(`color${gameState.selectedColor.charAt(0).toUpperCase() + gameState.selectedColor.slice(1)}`).classList.add('selected');
             }
-            
+
             // Update command button selection
             document.querySelectorAll('.cmd-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
-            
+
             if (gameState.selectedCommand) {
                 document.getElementById(`cmd${gameState.selectedCommand.charAt(0).toUpperCase() + gameState.selectedCommand.slice(1)}`).classList.add('selected');
             }
         }
-        
+
         // Update the execution queue display
         function updateExecutionQueueDisplay() {
             const queueElement = document.getElementById('executionQueue');
-            
+
             // Keep the header
             queueElement.innerHTML = '<div class="queue-header">Queue</div>';
-            
+
             // Add queue items
             gameState.executionQueue.forEach((command, index) => {
                 const item = document.createElement('div');
                 item.className = 'queue-item';
-                
+
                 // Highlight the current executing command
                 if (index === 0 && gameState.isRunning) {
                     item.classList.add('current');
                 }
-                
+
                 let symbol = '';
                 switch (command.type) {
                     case 'forward': symbol = '↑'; break;
@@ -804,13 +798,13 @@
                     case 'paintPurple': symbol = '+<span class="purple-dot">●</span>'; break;
                     case 'paintTurquoise': symbol = '+<span class="turquoise-dot">●</span>'; break;
                 }
-                
+
                 item.innerHTML = symbol;
-                
+
                 if (command.color) {
                     item.style.backgroundColor = command.color;
                 }
-                
+
                 queueElement.appendChild(item);
             });
         }
@@ -823,11 +817,11 @@
         // Handle stack cell click
         function handleStackCellClick(stackIndex, position) {
             if (gameState.isRunning) return;
-            
+
             console.log(`Clicked stack ${stackIndex} position ${position}`);
-            
+
             const stack = gameState.stacks[stackIndex];
-            
+
             // If a command is selected, add it to the stack
             if (gameState.selectedCommand) {
                 if (position < stack.size) {
@@ -837,7 +831,7 @@
                             type: gameState.selectedCommand,
                             color: gameState.selectedColor
                         };
-                    } 
+                    }
                     // Add new command if at the end
                     else if (position === stack.commands.length) {
                         stack.commands.push({
@@ -845,13 +839,13 @@
                             color: gameState.selectedColor
                         });
                     }
-                    
+
                     console.log(`Added command ${gameState.selectedCommand} to stack ${stackIndex} with color ${gameState.selectedColor || 'none'}`);
                     console.log("Stack commands now:", stack.commands);
-                    
+
                     updateGameDisplay();
                 }
-            } 
+            }
             // If only a color is selected, apply it to an existing command
             else if (gameState.selectedColor !== undefined) {
                 if (position < stack.commands.length) {
@@ -866,12 +860,12 @@
         function setSelectedCommand(command) {
             gameState.selectedCommand = command;
             console.log(`Selected command: ${command}`);
-            
+
             // Update UI to show selected command
             document.querySelectorAll('.cmd-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
-            
+
             document.getElementById(`cmd${command.charAt(0).toUpperCase() + command.slice(1)}`).classList.add('selected');
         }
 
@@ -880,18 +874,18 @@
             gameState.selectedCommand = null; // Clear selected command when selecting color
             gameState.selectedColor = color;
             console.log(`Selected color: ${color || 'none'}`);
-            
+
             // Update UI to show selected color
             document.querySelectorAll('.color-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
-            
+
             if (color === null) {
                 document.getElementById('colorClear').classList.add('selected');
             } else {
                 document.getElementById(`color${color.charAt(0).toUpperCase() + color.slice(1)}`).classList.add('selected');
             }
-            
+
             // Also clear command selection
             document.querySelectorAll('.cmd-btn').forEach(btn => {
                 btn.classList.remove('selected');
@@ -901,19 +895,19 @@
         // Run the program
         function runProgram() {
             if (gameState.isRunning) return;
-            
+
             // Initialize execution queue with commands from stack 0
             gameState.executionQueue = [];
-            
+
             // Only start if there are commands in stack 0
             if (gameState.stacks[0] && gameState.stacks[0].commands && gameState.stacks[0].commands.length > 0) {
                 console.log("Starting program with", gameState.stacks[0].commands.length, "commands in Stack 0");
-                
+
                 // Reset the arrow position
                 const levelConfig = GAME_LEVELS[gameState.currentLevelKey];
                 gameState.arrowPosition = { ...levelConfig.arrow.position };
                 gameState.arrowDirection = levelConfig.arrow.direction;
-                
+
                 gameState.isRunning = true;
                 addStackToExecutionQueue(0, 0);
                 updateExecutionQueueDisplay();
@@ -932,24 +926,24 @@
                 gameState.isRunning = false;
                 return;
             }
-            
+
             // Check if the stack exists
             if (stackIndex >= gameState.stacks.length) {
                 console.error(`Stack ${stackIndex} does not exist!`);
                 return;
             }
-            
+
             // Clone commands to avoid modifying the original stack
             const stackCommands = [...gameState.stacks[stackIndex].commands];
-            
+
             // Add each command to execution queue
             stackCommands.forEach(cmd => {
-                gameState.executionQueue.push({...cmd});
+                gameState.executionQueue.push({ ...cmd });
             });
-            
+
             // Update the display immediately when adding to the queue
             updateExecutionQueueDisplay();
-            
+
             // Debug
             console.log("Added commands to queue from stack", stackIndex);
             console.log("Queue now has", gameState.executionQueue.length, "commands");
@@ -958,7 +952,7 @@
         // Program execution loop
         function runProgramLoop() {
             if (!gameState.isRunning) return;
-            
+
             if (executeNextCommand()) {
                 setTimeout(runProgramLoop, gameState.speed);
             } else {
@@ -970,7 +964,7 @@
         // Step through the program
         function stepProgram() {
             if (gameState.isRunning) return;
-            
+
             // If first step, initialize execution queue
             if (gameState.executionQueue.length === 0) {
                 // Only start if there are commands in stack 0
@@ -979,7 +973,7 @@
                     const levelConfig = GAME_LEVELS[gameState.currentLevelKey];
                     gameState.arrowPosition = { ...levelConfig.arrow.position };
                     gameState.arrowDirection = levelConfig.arrow.direction;
-                    
+
                     addStackToExecutionQueue(0, 0);
                 } else {
                     alert("Please add commands to Stack 0 first!");
@@ -987,7 +981,7 @@
                     return;
                 }
             }
-            
+
             executeNextCommand();
             checkWinCondition();
         }
@@ -995,16 +989,16 @@
         // Execute the next command in the queue
         function executeNextCommand() {
             if (gameState.executionQueue.length === 0) return false;
-            
+
             const command = gameState.executionQueue.shift();
             console.log("Executing command:", command.type);
-            
+
             // Get the current cell color
             const currentCellX = gameState.arrowPosition.x;
             const currentCellY = gameState.arrowPosition.y;
             const currentCell = gameState.grid[currentCellY][currentCellX];
             const currentCellColor = currentCell?.color || null;
-            
+
             // Check if command should be executed based on color
             if (command.color && command.color !== currentCellColor) {
                 console.log("Skipping command due to color mismatch");
@@ -1012,7 +1006,7 @@
                 updateExecutionQueueDisplay();
                 return gameState.executionQueue.length > 0;
             }
-            
+
             // Execute command
             switch (command.type) {
                 case 'forward':
@@ -1043,9 +1037,9 @@
                     gameState.grid[currentCellY][currentCellX] = { type: 'color', color: 'turquoise' };
                     break;
             }
-            
+
             updateGameDisplay();
-            
+
             // Check if there are more commands in the queue
             return gameState.executionQueue.length > 0;
         }
@@ -1058,18 +1052,18 @@
                 { dx: 0, dy: 1 },  // Down
                 { dx: -1, dy: 0 }  // Left
             ];
-            
+
             const dir = directions[gameState.arrowDirection];
             const newX = gameState.arrowPosition.x + dir.dx;
             const newY = gameState.arrowPosition.y + dir.dy;
-            
+
             console.log(`Moving arrow from (${gameState.arrowPosition.x},${gameState.arrowPosition.y}) to (${newX},${newY})`);
-            
+
             // Check bounds
             if (newX >= 0 && newX < 16 && newY >= 0 && newY < 16) {
                 gameState.arrowPosition.x = newX;
                 gameState.arrowPosition.y = newY;
-                
+
                 // Check if the arrow moved to a cell without color
                 const newCell = gameState.grid[newY][newX];
                 if (!newCell || newCell.type !== 'color') {
@@ -1081,7 +1075,7 @@
                     }, 100);
                     return;
                 }
-                
+
                 // Check if the arrow reached a star
                 if (gameState.stars.some(star => star.x === newX && star.y === newY)) {
                     gameState.isRunning = false;
@@ -1105,10 +1099,10 @@
 
         // Check if the player has won
         function checkWinCondition() {
-            const allStarsCollected = gameState.stars.some(star => 
+            const allStarsCollected = gameState.stars.some(star =>
                 star.x === gameState.arrowPosition.x && star.y === gameState.arrowPosition.y
             );
-            
+
             if (allStarsCollected) {
                 setTimeout(() => {
                     alert("Victory! You've reached the star!");
@@ -1121,7 +1115,7 @@
         function resetProgram() {
             gameState.isRunning = false;
             gameState.executionQueue = [];
-            
+
             // Reset the game state
             loadLevel(gameState.currentLevelKey);
         }
@@ -1130,4 +1124,5 @@
         window.onload = initGame;
     </script>
 </body>
+
 </html>
